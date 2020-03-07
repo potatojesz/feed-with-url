@@ -15,11 +15,15 @@ public class Url {
     @NotBlank
     private String url;
 
+    @NotBlank
+    private String email;
+
     public Url() {
     }
 
-    public Url(@NotBlank String url) {
+    public Url(@NotBlank String url, @NotBlank String email) {
         this.url = url;
+        this.email = email;
     }
 
     public Long getId() {
@@ -36,5 +40,12 @@ public class Url {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

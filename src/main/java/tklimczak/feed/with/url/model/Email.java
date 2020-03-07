@@ -1,11 +1,8 @@
 package tklimczak.feed.with.url.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Entity
 @Table(name = "emails")
@@ -17,13 +14,22 @@ public class Email {
     private Long id;
 
     @NotBlank
+    @Column(unique = true)
     private String email;
+
+    @OneToMany(mappedBy="email", fetch = FetchType.EAGER)
+    private Set<Url> urls;
 
     public Email() {
     }
 
     public Email(@NotBlank String email) {
         this.email = email;
+    }
+
+    public Email(@NotBlank String email, Set<Url> urls) {
+        this.email = email;
+        this.urls = urls;
     }
 
     public Long getId() {
@@ -37,6 +43,20 @@ public class Email {
         return email;
     }
     public void setUrl(String email) {
+        this.email = email;
+    }
+
+    public Set<Url> getUrls() {
+        return urls;
+    }
+    public void setUrls(Set<Url> urls) {
+        this.urls = urls;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
         this.email = email;
     }
 }
