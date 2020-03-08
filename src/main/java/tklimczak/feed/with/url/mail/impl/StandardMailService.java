@@ -1,11 +1,11 @@
-package tklimczak.feed.with.url.service.impl;
+package tklimczak.feed.with.url.mail.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import tklimczak.feed.with.url.model.Email;
-import tklimczak.feed.with.url.service.MailService;
+import tklimczak.feed.with.url.mail.MailService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;

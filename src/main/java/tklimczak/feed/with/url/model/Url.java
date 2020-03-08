@@ -15,13 +15,13 @@ public class Url {
     @NotBlank
     private String url;
 
-    @NotBlank
-    private String email;
+    @ManyToOne
+    private Email email;
 
     public Url() {
     }
 
-    public Url(@NotBlank String url, @NotBlank String email) {
+    public Url(@NotBlank String url, Email email) {
         this.url = url;
         this.email = email;
     }
@@ -42,10 +42,13 @@ public class Url {
         this.url = url;
     }
 
-    public String getEmail() {
+    public String getEmailAddress() {
+        return email != null ? email.getEmail() : null;
+    }
+    public Email getEmail() {
         return email;
     }
-    public void setEmail(String email) {
+    public void setEmail(Email email) {
         this.email = email;
     }
 }

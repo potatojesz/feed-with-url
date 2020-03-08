@@ -10,7 +10,8 @@ import tklimczak.feed.with.url.model.exception.ResourceNotFoundException;
 import tklimczak.feed.with.url.model.payload.FeedPayload;
 import tklimczak.feed.with.url.repository.EmailRepository;
 import tklimczak.feed.with.url.repository.UrlRepository;
-import tklimczak.feed.with.url.service.MailService;
+import tklimczak.feed.with.url.mail.MailService;
+import tklimczak.feed.with.url.service.FeedWithUrlService;
 
 import javax.mail.MessagingException;
 import java.util.Optional;
@@ -25,26 +26,24 @@ public class FeedController {
     @Autowired
     private transient UrlRepository urlRepository;
     @Autowired
-    private transient MailService mailService;
+    private transient FeedWithUrlService service;
 
     @CrossOrigin
     @PostMapping("/")
-    ResponseEntity<Email> feed(@RequestBody FeedPayload payload) {
+    ResponseEntity<String> feed(@RequestBody FeedPayload payload) {
         Optional<Email> email = emailRepository.findByEmail(payload.getEmail());
         Email entity = email.map(value -> update(value, payload)).orElseGet(() -> save(payload));
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(entity.toString());
     }
 
     private Email save(FeedPayload payload) {
-        Email entity = new Email(payload.getEmail(), payload.getUrls().stream().map(url -> new Url(url, payload.getEmail())).collect(Collectors.toSet()));
-        entity = emailRepository.save(entity);
-        urlRepository.saveAll(entity.getUrls());
-        return entity;
+        final Email entity = new Email(payload.getEmail());
+        entity.setUrls(payload.getUrls().stream().map(url -> new Url(url, entity)).collect(Collectors.toSet()));
+        return emailRepository.save(entity);
     }
 
     private Email update(Email email, FeedPayload payload) {
-        email.getUrls().addAll(payload.getUrls().stream().map(url -> new Url(url, payload.getEmail())).collect(Collectors.toSet()));
-        urlRepository.saveAll(email.getUrls());
+        email.getUrls().addAll(payload.getUrls().stream().map(url -> new Url(url, email)).collect(Collectors.toSet()));
         return emailRepository.save(email);
     }
 
@@ -53,7 +52,7 @@ public class FeedController {
     ResponseEntity<String> sendFeed(@RequestParam String emailAddress) throws MessagingException {
         Optional<Email> email = emailRepository.findByEmail(emailAddress);
         if(email.isPresent()) {
-            mailService.send(email.get(), email.get().getUrls().stream().map(Url::getUrl).collect(Collectors.joining(System.lineSeparator())));
+            service.send(email.get());
             return ResponseEntity.ok("Sended RSS Feed to: " + emailAddress);
         } else {
             throw new ResourceNotFoundException("Email " + emailAddress + " not found. Unable to send feed.");
