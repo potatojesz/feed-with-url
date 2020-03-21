@@ -30,9 +30,10 @@ public class FeedController {
 
     @CrossOrigin
     @PostMapping("/")
-    ResponseEntity<String> feed(@RequestBody FeedPayload payload) {
+    ResponseEntity<String> feed(@RequestBody FeedPayload payload) throws InterruptedException {
         Optional<Email> email = emailRepository.findByEmail(payload.getEmail());
         Email entity = email.map(value -> update(value, payload)).orElseGet(() -> save(payload));
+        Thread.sleep(100); //Added some sleep so JMeter graphs looks nicer :)
         return ResponseEntity.ok(entity.toString());
     }
 
